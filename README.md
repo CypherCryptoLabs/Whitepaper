@@ -84,7 +84,7 @@ This P.o.R. is needed if the Receiver still wants to be able to receive further 
 
 It should be noted that the Sender of a Message needs to perform a small Proof of Work, in order to make Spam expensive and not worth it.
 
-When a Node receives a P.o.R., it is shared with the whole Network, with each P.o.R., the Node becomes more likely to be selected as the Forger for the next Block, thus having the chance of receiving a reward.
+When a Node receives a P.o.R., it is shared with the whole Network, with each P.o.R., the Node becomes more likely to be selected as the Forger for the next Block, thus having the chance of receiving a reward. The rewards originate from the Network Fees (just like in almost all other Cryptocurrencies), that are needed in order to send a transaction. Messages are completely free of charge.
 
 ## Conclusion
 Cypher is a simple protocol, that is able to solve many Privacy and Security related issues, while bringing Blockchain technology closer to the Masses, and creating an actual Use case, outside of Transactions, for it.
