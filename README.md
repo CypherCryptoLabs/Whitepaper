@@ -1,18 +1,20 @@
 # Cypher
 # Table of contents
 
-- [Cypher](#cypher)
-  - [Introduction](#introduction)
-    - [What is a Blockchain?](#what-is-a-Blockchain)
-    - [How a Block gets accepted in the Blockchain](#how-a-block-gets-accepted-in-the-Blockchain)
-  - [Live-Messenger](#live-messenger)
-    - [How a classic Live-Messenger works](#how-a-classic-live-messenger-works)
-    - [How Cypher Live-Messenger works](#how-cypher-live-messenger-works)
-    - [How do Nodes earn rewards](#how-do-nodes-earn-rewards)
-  - [Conclusion](#conclusion)
+- [Introduction](#introduction)
+- [How does Cypher work](#how-does-cypher-work)
+  - [What is a Blockchain](#what-is-a-blockchain)
+  - [Consensus Algorithm](#consensus-algorithm)
+    - [P.o.R](#por)
+    - [Voting slot](#voting-slot)
+    - [Selecting Validators](#selecting-validators)
+    - [Choosing a forger](#choosing-a-forger)
+    - [Forging a Block](#forging-a-block)
+  - [Privacy and Security](#privacy-and-security)
+  - [Future plans](#future-plans)
 
 ## Introduction
-For years big companies like Google, Facebook, Snapchat, Twitter, etc., have been providing Live-Messengers, while the data produced by its users has been collected and analyzed and advertised upon, and in the worst case, data has been shared with other Companies or upon request shared with Government Agencies. All this data has been sitting in the United States of America, China and some European Countries, even if the end-user was and never will physically be in the in the place the data is stored.
+For years big companies like Google, Facebook, Snapchat, Twitter, etc, have been providing Live-Messengers, while the data produced by its users has been collected and analyzed and advertised upon, and in the worst case, data has been shared with other Companies or upon request shared with Government Agencies. All this data has been sitting in the United States of America, even if the end-user was and never will physically be in the U.S.A.
 
 No User on said platforms was able to control the flow of data, and most Users do not know what data is collected and analyzed. Hundreds of Journalists have been spied upon, and even imprisoned because of private communication on these platforms. Even more Journalists have been banned from these Platforms for doing their research. 
 
@@ -24,69 +26,57 @@ Cyphers end-goal is to replace current Messengers, the vision of the end-product
 
 This Document explains how Cypher is working, if you want to read more technical details on how the official Cypher Node works, please refer to the Technical Documentation provided in the [official GitHub Repository](https://github.com/CypherCryptoLabs/cypher).
 
-```
-Tip: It is a good idea to read the Bitcoin White-paper before you continue reading this document, as this document does not explain the mathematical principals behind a Crypto-currency and Blockchain.
-
-This document assumes that you have basic knowledge in Crypto-currencies and Blockchains. 
-```
+## How does Cypher work
+Cypher is a relatively simple Protocol. Cypher uses a simple Blockchain, similar to the original Bitcoin Blockchain, because Cypher is not intended to be used primarily as a Currency, it is intended as a reward System, which has the secondary purpose of a Currency. Smart Contracts and Layer 2 are currently not planned. 
 
 ### What is a Blockchain
-A Blockchain in simple terms is nothing but a database. The difference between traditional Databases is that in a Blockchain, there are only 2 operations that can be performed on the Databse: Read and Append. To understand this better, we have to understand how a Blockchain is actually storing data.
+A Blockchain is a Database, in which you can only perform 2 operations: Read and Append. You cannot delete any entries or modify them. A dataset in a Blockchain is called "Block". A Block in Cyphers Case only contains a few different types of information (Other Blockchains may include other Information, please read other Projects White-papers to understand how their Blockchain works):
 
-In a traditional Database, each record of Data is refereed to as a "Row", Rows are stored in Tables. Each Column in a table can only store one specific data type, like Age, Name, Address, etc.If you want to store information about a person in a traditional database, you would create a table with columns like age, name, eye color, etc. Each time you want to enter a new person's data, you create a new row, you can imagine it like an Excel spreadsheet.
+- Timestamp at creation of the Block
+- Previous Block Hash, to prove the previous Blocks integrity
+- Payload, which contains all Transactions saved in the current Block
+- Reward Amount and Address, to tell which Address is credited for the creation of the Block
+- Signatures, to prove the Block has been approved by the Network
+- Network Diff, which proves which Nodes were online during the creation of the Block
 
-In a Blockchain, data is not stored in Rows, it's stored in "Blocks". A Block contains information about the previous Block, its creation time and the creator of the Block, as well as the payload of the Block, in this case the payload only contains transactions. Blocks are chained together with a checksum, providing proof that the previous Block is intact and valid, thus chaining each Block to its previous Block.
+The Cypher Blockchain is synced across all Nodes in the Network, via the Proof of Reception Consensus Algorithm.
 
-You can only read Blocks or append a new one to the chain, you cannot modify previous Blocks in any way, without breaking the checksum references. Even if the checksums would all be recalculated, an attacker would still need to somehow get the public Network to accept the modified copy of the Blockchain.
+### Consensus Algorithm
+Cypher uses a new Consensus, called "Proof of Reception". The classic Proof of Work, or P.o.W. for short, and Proof of Stake, P.o.S. for short, do not offer the functionality required by Cypher, although, Proof of Reception, P.o.R., is technically a P.o.W. Consensus. There are some key differences:
 
-### How a Block gets accepted in the Blockchain
-The Cypher Blockchain uses a Consensus Algorithm called "Proof of Stake", or P.o.S. Most Blockchains today use "Proof of Work", which, in very simple terms, means that a very computationally expensive equation needs to be solved for a Block to be accepted by the Network, and added to the Blockchain.
+A classic P.o.W. as seen in Bitcoin is based on senselessly hashing data to find a hash that will be accepted by the network. This may be very secure, but its wasting a lot of energy, for nothing in return except Network security. Imagine this could be turned into something more useful. This is where P.o.R. comes into play.
 
-In Cypher, every Minute a semi-random Node (you will learn in "[How do Nodes earn rewards](#how-do-nodes-earn-rewards)" why its only semi-random) gets selected by the Network, to propose a new Block. This is called "forging", and the selected Node is called "Forger". Up to 128 other Nodes get selected by the Network to vote in favor or against the proposed Block, these Nodes are called "Validators".
+P.o.R. does something similar, nodes need to find a good enough hash to be deemed the creator of a block. But the data that needs to be hashed, is not based on transactions, rather than messages send over the network.
 
-If more than 50% of Validators agree on a Block, the Block is considered as valid, each Node will now append the Block to their local copy of the Blockchain, and the cycle repeats.
+#### P.o.R
+A P.o.R. is a message combined with its metadata, signed by the recipient.
 
-Nodes that voted falsely will be punished and 15 Cypher will be removed from their balance, thus encouraging Nodes to only accept Blocks that are actually valid.
+#### Voting slot
+A voting slot is a 1 minute timeframe, during which Validators and the forger are selected, a block proposed and appended to the Blockchain if the Block is validated by at least n/2 + 1 nodes, where n represents the number of Nodes in the network with an upper limit of 128.
 
-## Live-Messenger
-Now that you understand the basics of how the Cypher Blockchain works, it is time to explain how Cypher aims to build a decentralized Live-Messenger.
+#### Selecting Validators
+In the first stage, Validators are selected for the current voting slot. This works by hashing the latest blocks hash concatenated with current voting slots Unix timestamp. The voting slots timestamp is the timestamp of the beginning of a minute, which means it can evenly be divided by 60 seconds (60000 milliseconds).
 
-Currently, most Crypto Project's infrastructure is used for nothing but transactions, while making safe and anonymous transactions possible, the Nodes running Crypto Networks have no other real purpose.
+This hash is called the Voting slot seed. This seed is very important for the rest of the voting slot.
 
-Expensive Hardware is being wasted, sitting idle and not benefiting the non-crypto-enthusiasts. Cypher aims to create a large, global, and decentralized Network, that will be used as the Backbone of the Cypher Live-Messenger, with anyone being able to participate, and earn rewards.
+First of all, all Nodes blockchain Addresses are thrown into a pool with the seed, and sorted by their numerical value. Then the seeds 2 neighbors are chosen as validators. Hash the seed, and repeat until there is 128 Nodes selected as validators, or there are no nodes left in the pool.
 
-Nodes are pushed towards being online for as much time as possible due to how "Proof of Stake" works, thereby guaranteeing high availability, and high quality of Service, which is something a Live-Messenger should obviously have. The global Nature of a decentralized Crypto Network also helps availability, Latency, and throughput for a Live-Messenger.
+#### Choosing a forger
+Choosing a forger can go 2 ways, depending on P.o.R.s being present or not.
 
-### How a classic Live-Messenger works
-To explain how the Protocol works, imagine a scenario in which Alice and Bob want to communicate with each other, without building a highly available infrastructure.
+If there are no P.o.Rs present, the Node who's numerical value of the Blockchain address is closest to the numerical value of the voting slots original seed, will become forger and can proceed to propose a block.
 
-In a classic Messenger, Alice and Bob both have to generate an Asymmetric cryptographic key-pair, which consists of a public Key and a private Key. Alice has to share her public Key with Bob, and vise versa. Platforms like WhatsApp or Telegram automate this process for the End-User. After the exchange of Keypairs, Alice can write a Message, and encrypt it with Bobs public Key, and sign it with her own private Key. This ensures that the Message was created by Alice, and can only be read by Bob. The Message is sent over the Messengers Infrastructure to Bobs Device, where the Signature that Alice created is verified, and then decrypted with Bobs private Key.
+If there is one or more P.o.R.s present, all P.o.R.s will be collected in a pool, and the P.o.R.s numerical value of its hash, closest to the numerical value of the seed, will be deemed the winner. The winner P.o.R.s owner, the node that send it into the pool, will be the forger and can propose a block.
 
-The issue is that for the normal User it is very difficult to verify if the Message was really only encrypted with Bobs public Key, or if there is a second copy that was encrypted with the Infrastructure-providers keys.
+#### Forging a Block
+After being chosen as Forger, a Node has to build a Block, containing transactions. The P.o.R. doesn't appear in the Block (this will very likely change though, when NetworkDiff is enabled).
 
-If the latter is true, that would mean that, in fact the conversation is End-To-End encrypted, but not secure, as all messages can still be read by a third-party.
+The proposed Block will then be fetched by all Validators, if they approve of the Block, they will share their signature, if they receive more than n/2 + 1 number of signatures, they will start sharing the block in the network, and the whole cycle can restart.
 
-The User has to trust the Provider that they do not have a Backdoor like this one implemented in their software. Even if that is not the case, with the Metadata that is automatically created when writing a message, you can still create Advertisements, and sell other Data.
+### Privacy and Security
+Cypher will be as secure and private as possible, for this reason, a User will be able to create a new Identity (Crypto Wallet) for each communication partner, so Messages can not be cross-linked by Nodes with the Blockchain-Address. Using a Network like Tor, the communication with Nodes will be completely anonymous, and close to impossible to trace.
 
-### How Cypher Live-Messenger works
-Cyphers general process of sending a Message is very similar, with a distinct difference:
+Senders of a message will have to prove to the Network, that the Receiver is actually willing to be contacted, for this, the Sender needs to include a copy of their public Key signed by the Receivers. This way, contacting random Addresses is not possible, and preventing spam and abuse.
 
-The Infrastructure on which the Message is sent to is determined by Alice and Bob themselves. The Clients select multiple Nodes, which will be used to transmit their Messages, and these Nodes change every couple of hours, to make it more difficult for a Node to collect enough Metadata of its Users.
-
-Since the Messenger Client is open-source, Users can verify themselves if it contains any backorders, collection of Metadata is not an issue since Nodes change enough times, and if the User really wanted, they could only use their own Node for communication, if they still don't trust the Network.
-
-### How do Nodes earn rewards
-Each time a Message is sent to the Network, the Users have to select 8 different Nodes, which can be used to receive a Message on. The Message needs to be sent to each of those Nodes, and the Receiver selects one of them to get the Message from.
-
-When the Message is being accessed by the Receiver, a "Proof of Reception", or P.o.R. for short, needs to be signed by the Receiver, and sent back to the Node which they requested the Message from.
-
-This P.o.R. is needed if the Receiver still wants to be able to receive further Messages by the Network, if too many Messages have not been answered with a P.o.R., any incoming Messages addressed to the Receiver will be blocked, this is a mechanism to prevent spamming and abuse.
-
-It should be noted that the Sender of a Message needs to perform a small Proof of Work, in order to make Spam expensive and not worth it.
-
-When a Node receives a P.o.R., it is shared with the whole Network, with each P.o.R., the Node becomes more likely to be selected as the Forger for the next Block, thus having the chance of receiving a reward. The rewards originate from the Network Fees (just like in almost all other Cryptocurrencies), that are needed in order to send a transaction. Messages are completely free of charge.
-
-## Conclusion
-Cypher is a simple protocol, that is able to solve many Privacy and Security related issues, while bringing Blockchain technology closer to the Masses, and creating an actual Use case, outside of Transactions, for it.
-
-Cypher is still very early in Development, but hopefully advancing relatively quickly, and soon challenging the current Information Titans in the world.
+### Future plans
+Cypher Crypto Labs is currently considering moving all of Cyphers Network to Tor. This would improve the Nodes anonymity, as well ass the Users. There are certain issues that need to be solved before that step will be taken however.
